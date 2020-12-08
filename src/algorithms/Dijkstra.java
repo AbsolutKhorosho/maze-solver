@@ -109,11 +109,7 @@ public class Dijkstra {
 
                 finalized.put( cur, cur.getPossible() );
 
-//                System.out.println( cur + " committed because dead end");
-
                 if ( queue.size() > 0 ) {
-
-//                    System.out.println( "Removing " + queue.get( queue.size() - 1 ) );
 
                     int smallestDistance = Integer.MAX_VALUE;
 
