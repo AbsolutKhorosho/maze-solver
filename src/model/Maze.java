@@ -159,7 +159,7 @@ public class Maze {
          */
         @Override
         public int hashCode() {
-            return Integer.parseInt(this.xPos + "0" + this.yPos);
+            return Integer.parseInt(this.xPos + "" + this.yPos);
         }
 
         /**

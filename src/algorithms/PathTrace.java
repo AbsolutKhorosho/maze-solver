@@ -63,7 +63,6 @@ public class PathTrace {
                     for ( int i = cur.getYPos(); i > pathNode.getYPos(); i-- ) {
 
 
-
                         outputSolution.setRGB( cur.getXPos(), i, TRACE_COLOR );
 
                     }

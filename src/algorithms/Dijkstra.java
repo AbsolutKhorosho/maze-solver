@@ -4,6 +4,7 @@ import model.Maze;
 import gui.MazeViewer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ArrayList;
 
 /**
@@ -17,19 +18,30 @@ import java.util.ArrayList;
 public class Dijkstra {
 
     /** holds the queue of considered Nodes */
-    private static ArrayList<Maze.Node> queue = new ArrayList<>();
+    private static final ArrayList<Maze.Node> queue = new ArrayList<>();
 
     /** holds the considered Nodes for efficient .contains() */
-    private static HashMap<Maze.Node, Integer> hashQueue = new HashMap<>();
+    private static final HashSet<Maze.Node> hashQueue = new HashSet<>();
 
     /** holds the Nodes that are finalized */
-    private static HashMap<Maze.Node, Maze.Node> finalized = new HashMap<>();
+    private static final HashMap<Maze.Node, Maze.Node> finalized = new HashMap<>();
 
-    /**  */
+    /** holds the start and finish Node of the Maze */
     private static Maze.Node startNode, finalNode;
 
+    /** holds the Maze of Nodes */
     private static Maze maze;
 
+    /**
+     * Called by MazeSolver. Generates
+     * the Maze, runs the Dijkstra
+     * search algorithm, and
+     * calls the method to
+     * back trace the result.
+     * @param inputFileName input maze
+     * @param outputFileName output traced maze
+     * @param showPlot boolean to show traced maze
+     */
     public static void solve ( String inputFileName, String outputFileName, boolean showPlot ) {
 
         double startMazeTime = System.currentTimeMillis();
@@ -46,7 +58,7 @@ public class Dijkstra {
 
         double startPathTime = System.currentTimeMillis();
 
-        _solve( );
+        _solve();
 
         System.out.printf("Finalized nodes: Finished in %.5f seconds.\n", (System.currentTimeMillis() - startPathTime) / 1000.0);
 
@@ -69,15 +81,13 @@ public class Dijkstra {
 
         while ( finalized.size() < maze.getNodeCount() && !finalized.containsKey( finalNode ) ) {
 
-            if ( hashQueue.containsKey( cur ) ) {
+            if ( hashQueue.contains( cur ) ) {
 
                 queue.remove( cur );
 
                 hashQueue.remove( cur );
 
             }
-
-//            System.out.println( finalized.size() + " " + maze.getNodeCount() );
 
             ArrayList<Maze.Node> considered = new ArrayList<>();
 
@@ -111,25 +121,9 @@ public class Dijkstra {
 
                 if ( queue.size() > 0 ) {
 
-                    int smallestDistance = Integer.MAX_VALUE;
+                    hashQueue.remove( queue.get( 0 ) );
 
-                    int smallestIndex = -1;
-
-                    for ( int i = 0; i < queue.size(); i++ ) {
-
-                        if ( queue.get(i).getDistance() < smallestDistance ) {
-
-                            smallestIndex = i;
-
-                            smallestDistance = queue.get(i).getDistance();
-
-                        }
-
-                    }
-
-                    cur = queue.remove( smallestIndex );
-
-                    hashQueue.remove( cur );
+                    cur = queue.remove( 0 );
 
                 }
 
@@ -160,8 +154,6 @@ public class Dijkstra {
                 }
             }
 
-//            System.out.println( cur + " committed because its neighbors are touched.");
-
             finalized.put(cur, cur.getPossible());
 
             cur = nonFinalizedNodes.get(0);
@@ -170,11 +162,26 @@ public class Dijkstra {
 
                 for ( int i = 1; i < nonFinalizedNodes.size(); i++ ) {
 
-//                    System.out.println("Adding " + nonFinalizedNodes.get(i));
+                    int count = 0;
 
-                    queue.add( nonFinalizedNodes.get( i ) );
+                    while ( count < queue.size() &&
+                                nonFinalizedNodes.get(i).getDistance() > queue.get( count ).getDistance() ) {
 
-                    hashQueue.put( nonFinalizedNodes.get( i ), queue.size() - 1 );
+                        ++count;
+
+                    }
+
+                    if ( count == queue.size() ) {
+
+                        queue.add( nonFinalizedNodes.get(i) );
+
+                    } else {
+
+                        queue.add( count, nonFinalizedNodes.get(i) );
+
+                    }
+
+                    hashQueue.add( nonFinalizedNodes.get( i ) );
 
                 }
             }
