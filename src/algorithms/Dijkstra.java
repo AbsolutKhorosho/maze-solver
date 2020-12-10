@@ -85,6 +85,8 @@ public class Dijkstra {
 
                 queue.remove( cur );
 
+                System.out.println("Not Okay");
+
                 hashQueue.remove( cur );
 
             }
